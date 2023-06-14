@@ -12,6 +12,7 @@
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-image-gallery": "^1.2.12",
     "sass": "^1.60.0",
     "styled-components": "^5.3.9"
   },

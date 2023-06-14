@@ -30,12 +30,12 @@ interface IHeader {
 }
 const Header: FC<IHeader> = ({}) => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
-  const { locale, locales, push } = useRouter();
-
+  const { locale, locales, push, pathname, asPath, query } = useRouter();
   const [isSearching, setIsSearching] = useState(false);
+
   // control language in top header
   const handleChangeLang = e => {
-    push("/", undefined, { locale: e.key });
+    push({ pathname, query }, asPath, { locale: e.key });
   };
   const menuLang: MenuProps["items"] = locales.map(locale => ({
     key: locale,
@@ -74,6 +74,10 @@ const Header: FC<IHeader> = ({}) => {
 
   const handleClickHamburger = () => {
     setIsOpenSidebar(!isOpenSidebar);
+  };
+
+  const openCart = () => {
+    push("/cart");
   };
 
   // sidebar
@@ -170,7 +174,7 @@ const Header: FC<IHeader> = ({}) => {
               <div id="burger" onClick={handleClickHamburger}>
                 <MenuOutlined style={{ fontSize: fontSizeIcon }} />
               </div>
-              <a href="" id="logo">
+              <a href="/" id="logo">
                 <img
                   src="https://s3-us-west-2.amazonaws.com/creatix.io/creatix-new-logo-v1.svg"
                   alt="Logo"
@@ -195,7 +199,7 @@ const Header: FC<IHeader> = ({}) => {
               <div className="header-right-wrap-icon">
                 <UserOutlined />
               </div>
-              <div className="header-right-wrap-icon">
+              <div className="header-right-wrap-icon" onClick={openCart}>
                 <Badge style={{ fontSize: fontSizeBadge }} count={5}>
                   <ShoppingCartOutlined style={{ fontSize: fontSizeIcon }} />
                 </Badge>

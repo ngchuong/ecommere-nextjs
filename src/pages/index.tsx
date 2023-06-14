@@ -25,6 +25,8 @@ import {
 export default function Home(props: InferGetStaticPropsType<typeof getStaticProps>) {
   const { t } = useTranslation("header");
 
+  const router = useRouter();
+
   return (
     <div className={styles.container}>
       <Head>
@@ -33,7 +35,13 @@ export default function Home(props: InferGetStaticPropsType<typeof getStaticProp
 
       <main>
         {/* {t("test")} */}
+        <button type="button" onClick={() => router.push("/404")}>
+          Click me
+        </button>
 
+        <button type="button" onClick={() => router.push("/product/123")}>
+          Click product detail
+        </button>
         {/* <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
             <h3>Documentation &rarr;</h3>
