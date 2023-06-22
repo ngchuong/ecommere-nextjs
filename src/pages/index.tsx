@@ -36,11 +36,14 @@ export default function Home(props: InferGetStaticPropsType<typeof getStaticProp
       <main>
         {/* {t("test")} */}
         <button type="button" onClick={() => router.push("/404")}>
-          Click me
+          404
         </button>
 
-        <button type="button" onClick={() => router.push("/product/123")}>
+        <button type="button" onClick={() => router.push("/product/1")}>
           Click product detail
+        </button>
+        <button type="button" onClick={() => router.push("/product")}>
+          Click products
         </button>
         {/* <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>

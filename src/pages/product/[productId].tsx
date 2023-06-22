@@ -29,6 +29,13 @@ import ImageGallery from "react-image-gallery";
 import { i18n, useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
+import _ from "lodash";
+
+import uniqWith from "lodash/uniqWith";
+import isEqual from "lodash/isEqual";
+
+import useDetailProduct from "src/hooks/useDetailProduct";
+
 const { Header, Content, Footer, Sider } = Layout;
 const { Title, Text } = Typography;
 
@@ -53,23 +60,37 @@ const { Group: GroundRadio, Button: ButtonRadio } = Radio;
 // });
 
 const ProductDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const [dataProduct, setDataProduct] = useState({ color: "red", size: 13 });
-
+  const { t } = useTranslation("productDetail");
   const router = useRouter();
   const { productId } = router.query;
-  const { t } = useTranslation("productDetail");
 
-  const optionsColor = [
-    { label: "Apple", value: "Apple" },
-    { label: "Pear", value: "Pear" },
-    { label: "Orange", value: "Orange", disabled: true },
-  ];
+  const { data, isLoading } = useDetailProduct(productId);
+  // if (isLoading || !data) {
+  //   //TODO:
+  //   return <>Loading</>;
+  // }
 
-  const optionsSize = [
-    { label: 12, value: 12 },
-    { label: 13, value: 13 },
-    { label: 14, value: 14, disabled: true },
-  ];
+  const productVariant = data?.productVariant || [];
+  console.log(222, data);
+
+  const optionsColor = _.uniqWith(
+    productVariant?.map((el, index) => ({
+      label: el.color,
+      value: el.color,
+    })),
+    _.isEqual,
+  );
+
+  const firtsProductVariant = productVariant?.at(0);
+  const [dataProduct, setDataProduct] = useState({
+    color: firtsProductVariant?.color,
+    size: firtsProductVariant?.size,
+    remainAmount: firtsProductVariant?.quantity,
+  });
+
+  const optionsSize = productVariant
+    ?.filter(el => el.color === dataProduct.color)
+    .map(el => ({ label: el.size, value: el.size }));
 
   // TODO: fake data
   const initState = {
@@ -130,10 +151,19 @@ const ProductDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) =>
 
   // handle
   const handleChangeColor = ({ target: { value } }: RadioChangeEvent) => {
-    console.log("radio4 checked", value);
+    const firstVariant = productVariant.find(el => el.color === value);
+    setDataProduct({
+      ...dataProduct,
+      color: value,
+      size: firstVariant.size,
+      remainAmount: firstVariant?.quantity,
+    });
   };
   const handleChangeSize = ({ target: { value } }: RadioChangeEvent) => {
-    console.log("radio4 checked", value);
+    const findVariant = productVariant.find(
+      el => el.color === dataProduct.color && el.size === value,
+    );
+    setDataProduct({ ...dataProduct, size: value, remainAmount: findVariant?.quantity });
   };
 
   return (
@@ -157,24 +187,20 @@ const ProductDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) =>
                 </Col>
                 <Col className="gutter-row" span={12}>
                   <Row>
-                    <Title level={3}>Beige metal hoop tote bag</Title>
+                    <Title level={3}>{data?.name}</Title>
                   </Row>
                   <Row>
-                    <Text>$75.00–$80.00</Text>
+                    <Text>$ {data?.price}</Text>
                   </Row>
                   <Row>
-                    <Text type="secondary">
-                      Desciption: Sed egestas, ante et vulputate volutpat, eros pede semper est,
-                      vitae luctus metus libero eu augue. Morbi purus libero, faucibus adipiscing.
-                      Sed lectus.
-                    </Text>
+                    <Text type="secondary">{data?.description}</Text>
                   </Row>
                   <Row
                     gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
                     align={"middle"}
                     style={{ marginTop: 10 }}
                   >
-                    <Col className="gutter-row" span={2}>
+                    <Col className="gutter-row" span={6}>
                       Color
                     </Col>
                     <Col className="gutter-row">
@@ -192,7 +218,7 @@ const ProductDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) =>
                     align={"middle"}
                     style={{ marginTop: 10 }}
                   >
-                    <Col className="gutter-row" span={2}>
+                    <Col className="gutter-row" span={6}>
                       Size
                     </Col>
                     <Col className="gutter-row">
@@ -210,7 +236,17 @@ const ProductDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) =>
                     align={"middle"}
                     style={{ marginTop: 10 }}
                   >
-                    <Col className="gutter-row" span={2}>
+                    <Col className="gutter-row" span={6}>
+                      Remain qty
+                    </Col>
+                    <Col className="gutter-row">{dataProduct.remainAmount}</Col>
+                  </Row>
+                  <Row
+                    gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}
+                    align={"middle"}
+                    style={{ marginTop: 10 }}
+                  >
+                    <Col className="gutter-row" span={6}>
                       Qty
                     </Col>
                     <Col className="gutter-row">
@@ -228,7 +264,7 @@ const ProductDetail = (props: InferGetStaticPropsType<typeof getStaticProps>) =>
                     align={"middle"}
                     style={{ marginTop: 10 }}
                   >
-                    <Col className="gutter-row" span={2}>
+                    <Col className="gutter-row" span={6}>
                       Category:
                     </Col>
                     <Col className="gutter-row">tuis, quan, ao</Col>
@@ -279,7 +315,6 @@ export const getStaticProps = async context => {
   //   serverSideTranslations(context.locale || "vi", ["header"]),
   // ]);
   const i18n = await serverSideTranslations(context.locale || "vi", ["productDetail"]);
-
 
   // if (session) {
   //   return {
