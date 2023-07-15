@@ -6,8 +6,14 @@ import { AppProps } from "next/app";
 import type { EmotionCache } from "@emotion/cache";
 import Layout from "src/components/layout";
 
+import LoginPage from "./login";
+import RegistrationPage from "./register";
+
 // wrap to translation
 const InnerApp = appWithTranslation(({ Component, pageProps: { session, ...pageProps } }) => {
+  if (Component === LoginPage || Component === RegistrationPage) {
+    return <Component {...pageProps} />;
+  }
   return (
     <Layout>
       <Component {...pageProps} />;
