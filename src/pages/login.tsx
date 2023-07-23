@@ -3,6 +3,7 @@ import { Form, Input, Button, Col, Row } from "antd";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
+console.log(1)
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import {
   ClientSafeProvider,
@@ -25,8 +26,8 @@ interface LoginProps {
 }
 
 const LoginPage: FC<LoginProps> = ({
-      providers,
-    }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+          providers,
+        }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { t } = useTranslation("login");
 
